@@ -26,3 +26,20 @@ export interface ChartMargins {
   bottom: number;
   left: number;
 }
+
+// my models----------------------------------------------------
+export interface DataType {
+  [year: string]: string;
+  Department: string;
+}
+
+export interface DepartmentEntry {
+  department: string;
+  year: string;
+  expense: string;
+}
+
+export interface GroupedBarData {
+  year: string;
+  data: DepartmentEntry[];
+}

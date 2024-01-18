@@ -8,11 +8,6 @@ export class ChartDimensionsService {
   private dimensions!: DOMRect;
   private margins: ChartMargins = { top: 0, right: 0, bottom: 0, left: 0 };
 
-  defineDimensions(dimensions: DOMRect, margins: ChartMargins): void {
-    this.dimensions = dimensions;
-    this.margins = margins;
-  }
-
   get width(): number {
     return this.dimensions.width;
   }
@@ -81,4 +76,9 @@ export class ChartDimensionsService {
   }
 
   constructor() {}
+
+  defineDimensions(dimensions: DOMRect, margins: ChartMargins): void {
+    this.dimensions = dimensions;
+    this.margins = margins;
+  }
 }

@@ -182,13 +182,13 @@ export class BarChartComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    console.log(this.scales);
+    // console.log(this.scales);
     this.svg = this.host.select('svg');
     this.setDimensions();
     this.setElements();
     this.updateChart();
 
-    console.log(this.data);
+    // console.log(this.data);
   }
 
   ngOnChanges(): void {
@@ -204,6 +204,7 @@ export class BarChartComponent implements OnInit, OnChanges {
       this.config.margin
     );
   }
+  
   setElements(): void {
     this.xAxisContainer = this.svg
       .append('g')
@@ -273,9 +274,12 @@ export class BarChartComponent implements OnInit, OnChanges {
   }
 
   setXScale(): void {
+    // console.log(this.data); 
     const domain = Array.from(
       new Set(this.data.data.map((d: GroupStackDataElement) => d.domain))
     ).sort(d3.ascending);
+
+    console.log('domain',domain);
 
     const range = [0, this.dimensions.innerWidth];
 
@@ -302,11 +306,12 @@ export class BarChartComponent implements OnInit, OnChanges {
     const domain = Array.from(
       new Set(this.data.data.map((d: GroupStackDataElement) => d.group))
     ).sort(d3.ascending);
+    console.log('group',domain);
     const range = [0, this.scales.x.bandwidth()];
 
     this.scales.group = d3.scaleBand().domain(domain).range(range);
 
-    console.log(this.scales);
+    // console.log(this.scales);
   }
   setColorScale(): void {
     const stacks = Array.from(
@@ -321,7 +326,7 @@ export class BarChartComponent implements OnInit, OnChanges {
     this.yLabel.text(this.data.yLabel);
   }
 
-  serAxes(): void {
+  setAxes(): void {
     this.setXAxis();
     this.setYAxis();
   }
@@ -364,10 +369,11 @@ export class BarChartComponent implements OnInit, OnChanges {
           element[1].find((d: any) => d.stack === key).value
       );
 
-    console.log('grouped', groupedData);
+    // console.log('grouped', groupedData);
     this.stackedData = stack(groupedData as any);
-    console.log('stacked', this.stackedData);
+    // console.log('stacked', this.stackedData);
   }
+
   redrawRectangles(): void {
     const data = this.stackedData;
     // const colors = d3.schemeCategory10;
@@ -388,6 +394,7 @@ export class BarChartComponent implements OnInit, OnChanges {
       // .attr('x', (d: any) => this.scales.x(d.data[0] + ''))
       .attr('x', (d: any) => {
         const [domain, group] = d.data[0].split('-');
+        // console.log([domain, group])
         return this.scales.x(domain) + this.scales.group(group);
       })
       .attr('width', this.scales.group.bandwidth())
@@ -402,7 +409,7 @@ export class BarChartComponent implements OnInit, OnChanges {
   updateChart(): void {
     this.setParameters();
     this.setLabels();
-    this.serAxes();
+    this.setAxes();
     this.setLegend();
     this.draw();
   }
