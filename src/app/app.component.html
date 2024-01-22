@@ -1,5 +1,8 @@
 <!-- <app-bar-chart [data]="stackedData"></app-bar-chart> -->
-<app-multiple-line-chart></app-multiple-line-chart>
-<app-grouped-bar-chart [chartData]="groupedBarData"></app-grouped-bar-chart>
-<app-pie-chart></app-pie-chart>
-<app-line-chart></app-line-chart>
+<!-- <app-multiple-line-chart [data]="multipleLineData"></app-multiple-line-chart> -->
+
+<div class="charts-container">
+  <app-grouped-bar-chart [chartData]="data"></app-grouped-bar-chart>
+  <app-line-chart [chartData]="data"></app-line-chart>
+  <app-pie-chart></app-pie-chart>
+</div>

@@ -35,13 +35,15 @@ import { MultipleLineChartComponent } from './udemy-charts/multiple-line-chart/m
 })
 export class AppComponent implements OnInit {
   stackedData!: GroupStackedData;
-
-  groupedBarData: DepartmentEntry[] = [];
+  multipleLineData!: any;
+  data: DepartmentEntry[] = [];
 
   constructor(private dataService: DataService) {}
 
   ngOnInit() {
     this.getStackedBarData();
+    this.getMultipleLineData();
+
     this.getGroupedBarData();
   }
 
@@ -71,11 +73,17 @@ export class AppComponent implements OnInit {
       });
   }
 
+  getMultipleLineData() {
+    this.dataService.getParsedJson('assets/daily.json').subscribe((data) => {
+      this.multipleLineData = data;
+    });
+  }
+
   getGroupedBarData() {
     this.dataService
       .getParsedJson('assets/us-spending-since-2000-v3.json')
       .subscribe((data: DataType[]) => {
-        this.groupedBarData = data
+        this.data = data
           .map((element) => {
             const department = element.Department;
             const objectEntries = Object.entries(element);

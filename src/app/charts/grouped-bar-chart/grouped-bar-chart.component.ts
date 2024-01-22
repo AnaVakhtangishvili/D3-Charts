@@ -79,14 +79,16 @@ export class GroupedBarChartComponent implements OnInit, OnChanges {
       .attr(
         'transform',
         `translate(${this.dimensions.marginLeft}, ${this.dimensions.marginBottom})`
-      ).style('font-size', '1rem');
+      )
+      .style('font-size', '1rem');
 
     this.yAxisContainer = this.svg
       .append('g')
       .attr(
         'transform',
         `translate(${this.dimensions.marginLeft}, ${this.dimensions.marginTop})`
-      ).style('font-size', '1rem');
+      )
+      .style('font-size', '1rem');
 
     this.chartContainer = this.svg
       .append('g')
@@ -120,7 +122,7 @@ export class GroupedBarChartComponent implements OnInit, OnChanges {
       .attr(
         'transform',
         `translate(${this.dimensions.marginLeft - 70}, ${
-          this.dimensions.middleHeight
+          this.dimensions.middleInnerHeight
         })`
       )
       .append('text')
@@ -129,8 +131,8 @@ export class GroupedBarChartComponent implements OnInit, OnChanges {
   }
 
   setLabels() {
-    this.title.text('US Departments Expenses 2018-2022');
-    this.yLabel.text('Expenses in million USD');
+    this.title.text('U.S. Departments spending from 2018-2022');
+    this.yLabel.text('Spending in million USD');
   }
 
   setParameters() {
@@ -188,7 +190,7 @@ export class GroupedBarChartComponent implements OnInit, OnChanges {
   setYAxis() {
     this.yAxis = d3
       .axisLeft(this.scales.y)
-      .ticks(10)
+      .ticks(7)
       .tickSizeOuter(0)
       .tickSizeInner(-this.dimensions.innerWidth);
 
