@@ -134,6 +134,7 @@ export class LineChartComponent implements OnInit {
   setParameters() {
     this.setXScale();
     this.setYScale();
+    this.setColorScale();
   }
 
   setXScale() {
@@ -145,7 +146,8 @@ export class LineChartComponent implements OnInit {
   }
 
   setYScale() {
-    const maxValue = Number(d3.max(this.filteredChartData, (d) => d.expense)) / 10e6;
+    const maxValue =
+      Number(d3.max(this.filteredChartData, (d) => d.expense)) / 10e6;
 
     this.scales.y = d3
       .scaleLinear()
@@ -153,12 +155,20 @@ export class LineChartComponent implements OnInit {
       .range([this.dimensions.innerHeight, 0]);
   }
 
+  setColorScale() {
+    this.scales.color = d3
+      .scaleOrdinal()
+      .domain(this.departments)
+      .range(d3.schemeTableau10);
+  }
+
   setAxes() {
     this.xAxis = d3.axisBottom(this.scales.x).tickSizeOuter(0);
     this.yAxis = d3
       .axisLeft(this.scales.y)
       .tickSizeOuter(0)
-      .tickSizeInner(-this.dimensions.innerWidth).ticks(8);
+      .tickSizeInner(-this.dimensions.innerWidth)
+      .ticks(8);
 
     this.xAxisContainer.call(this.xAxis);
     this.xAxisContainer
@@ -184,10 +194,12 @@ export class LineChartComponent implements OnInit {
       .append('path')
       .datum(this.filteredChartData)
       .attr('fill', 'none')
-      .attr('stroke', '#a77393')
       .attr('stroke-width', 5)
       .attr('stroke-linecap', 'round')
-      .attr('d', line);
+      .attr('d', line)
+      .style('stroke', (d: DepartmentEntry[]) =>
+        this.scales.color(d[0].department)
+      );
   }
 
   updateChart() {
