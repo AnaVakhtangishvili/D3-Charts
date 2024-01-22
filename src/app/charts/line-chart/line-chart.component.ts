@@ -5,20 +5,36 @@ import {
   OnChanges,
   OnInit,
   SimpleChanges,
+  signal,
 } from '@angular/core';
 import { DepartmentEntry } from '../models/chart.models';
 import { ChartDimensionsService } from '../../services/chart-dimensions.service';
 import * as d3 from 'd3';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { Department } from '../models/chart.enums';
 
 @Component({
   selector: 'app-line-chart',
   standalone: true,
-  imports: [],
+  imports: [
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+  ],
   templateUrl: './line-chart.component.html',
   styleUrl: './line-chart.component.scss',
 })
-export class LineChartComponent implements OnInit, OnChanges {
+export class LineChartComponent implements OnInit {
   @Input() chartData: DepartmentEntry[] = [];
+
+  departmentSelectionControl = new FormControl(Department.DEFENSE);
+  filteredChartData: DepartmentEntry[] = [];
+  departments: string[] = [];
+  department = Department;
 
   host: any;
   svg: any;
@@ -35,30 +51,37 @@ export class LineChartComponent implements OnInit, OnChanges {
 
   scales: any = {};
 
-  margin = { top: 40, right: 20, bottom: 200, left: 100 };
-
-  line: any;
+  margin = { top: 40, right: 20, bottom: 50, left: 96 };
 
   constructor(
     private element: ElementRef,
     private dimensions: ChartDimensionsService
-  ) {
-    this.host = d3.select(this.element.nativeElement);
-  }
+  ) {}
 
   ngOnInit() {
-    this.svg = this.host.select('svg');
+    this.host = d3.select(this.element.nativeElement);
+    this.svg = this.host.select('svg.line-chart');
 
+    this.filterChartData(this.departmentSelectionControl.value);
+    this.setData();
     this.setDimensions();
     this.setElements();
     this.updateChart();
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (!this.svg) {
-      return;
-    }
-    this.updateChart();
+  setData() {
+    this.departments = [...new Set(this.chartData.map((d) => d.department))];
+
+    this.departmentSelectionControl.valueChanges.subscribe((value) => {
+      this.filterChartData(value);
+      this.updateChart();
+    });
+  }
+
+  filterChartData(department: string | null) {
+    this.filteredChartData = this.chartData.filter(
+      (d) => d.department === department
+    );
   }
 
   setDimensions() {
@@ -87,17 +110,11 @@ export class LineChartComponent implements OnInit, OnChanges {
 
     this.chartContainer = this.svg
       .append('g')
+      .attr('class', 'chartContainer')
       .attr(
         'transform',
         `translate(${this.dimensions.marginLeft}, ${this.dimensions.marginTop})`
       );
-
-    // this.legendContainer = this.svg
-    //   .append('g')
-    //   .attr(
-    //     'transform',
-    //     `translate(${this.dimensions.marginLeft}, ${this.dimensions.marginTop})`
-    //   );
 
     this.title = this.svg
       .append('g')
@@ -108,17 +125,6 @@ export class LineChartComponent implements OnInit, OnChanges {
         `translate(${this.dimensions.middleInnerWidth}, ${this.dimensions.middleMarginTop})`
       )
       .attr('text-anchor', 'middle');
-
-    // this.yLabel = this.svg
-    //   .append('g')
-    //   .style('font-size', '1.5rem')
-    //   .append('text')
-    //   .attr(
-    //     'transform',
-    //     `translate(${this.dimensions.marginLeft - 70}, ${
-    //       this.dimensions.middleInnerHeight
-    //     })`
-    //   );
   }
 
   setLabels() {
@@ -128,12 +134,6 @@ export class LineChartComponent implements OnInit, OnChanges {
   setParameters() {
     this.setXScale();
     this.setYScale();
-    // this.setColorScale();
-
-    this.line = d3
-      .line()
-      .x((d: any) => this.scales.x(d.year))
-      .y((d: any) => this.scales.y(d.expense));
   }
 
   setXScale() {
@@ -145,7 +145,7 @@ export class LineChartComponent implements OnInit, OnChanges {
   }
 
   setYScale() {
-    const maxValue = Number(d3.max(this.chartData, (d) => d.expense)) / 10e6;
+    const maxValue = Number(d3.max(this.filteredChartData, (d) => d.expense)) / 10e6;
 
     this.scales.y = d3
       .scaleLinear()
@@ -153,51 +153,48 @@ export class LineChartComponent implements OnInit, OnChanges {
       .range([this.dimensions.innerHeight, 0]);
   }
 
-  // setColorScale() {
-  //   this.scales.color = d3
-  //     .scaleOrdinal()
-  //     .domain(this.chartData.map((d) => d.department))
-  //     .range(d3.schemeTableau10);
-  // }
-
-  setAxEs() {
+  setAxes() {
     this.xAxis = d3.axisBottom(this.scales.x).tickSizeOuter(0);
-    this.yAxis = d3.axisLeft(this.scales.y).tickSizeOuter(0);
-    // .tickSizeInner(-this.dimensions.innerWidth).attr('stroke', '#ddd');
+    this.yAxis = d3
+      .axisLeft(this.scales.y)
+      .tickSizeOuter(0)
+      .tickSizeInner(-this.dimensions.innerWidth).ticks(8);
 
     this.xAxisContainer.call(this.xAxis);
     this.xAxisContainer
       .selectAll('text')
       .attr('transform', 'rotate(-45)')
       .attr('text-anchor', 'end');
+
     this.yAxisContainer.call(this.yAxis);
+    this.yAxisContainer.selectAll('.tick line').attr('stroke', '#ddd');
   }
 
-  setLegend() {}
-
   drawChart() {
-    const lineData = this.chartData
-      .filter(
-        (d) => d.department === 'Department of Defense - Military Programs'
-      )
-      .map((d) => ({ year: d.year, expense: +d.expense }));
+    const line = d3
+      .line()
+      .x((d: any) => this.scales.x(d.year))
+      .y((d: any) => this.scales.y(d.expense / 10e6));
 
-    this.chartContainer
-      .select('path.chartLine')
-      .data(lineData)
+    const lineChart = this.chartContainer
+      .append('g')
+      .attr('class', 'lineChart');
+
+    lineChart
       .append('path')
-      .attr('class', 'chartLine')
-      .attr('d', (d: any) => {
-        return this.line(d);
-      })
-      .style('stroke', 'red');
+      .datum(this.filteredChartData)
+      .attr('fill', 'none')
+      .attr('stroke', '#a77393')
+      .attr('stroke-width', 5)
+      .attr('stroke-linecap', 'round')
+      .attr('d', line);
   }
 
   updateChart() {
+    this.chartContainer.selectAll('g.lineChart').remove();
     this.setLabels();
     this.setParameters();
-    this.setAxEs();
-    this.setLegend();
+    this.setAxes();
     this.drawChart();
   }
 }

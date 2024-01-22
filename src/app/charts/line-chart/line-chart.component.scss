@@ -1,4 +1,16 @@
 svg {
-  width: 1000px;
+  width: 800px;
   height: 700px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.select {
+  width: 400px;
+  margin-left: 6rem;
 }
