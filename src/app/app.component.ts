@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
-import { BarChartComponent } from './charts/bar-chart/bar-chart.component';
+import { BarChartComponent } from './udemy-charts/bar-chart/bar-chart.component';
 import { PieChartComponent } from './charts/pie-chart/pie-chart.component';
 import { LineChartComponent } from './charts/line-chart/line-chart.component';
 import { DataService } from './services/data.service';
@@ -14,6 +14,7 @@ import {
 } from './charts/models/chart.models';
 import { GroupedBarChartComponent } from './charts/grouped-bar-chart/grouped-bar-chart.component';
 import * as d3 from 'd3';
+import { MultipleLineChartComponent } from './udemy-charts/multiple-line-chart/multiple-line-chart.component';
 
 @Component({
   selector: 'app-root',
@@ -24,9 +25,10 @@ import * as d3 from 'd3';
     RouterOutlet,
     HttpClientModule,
     BarChartComponent,
+    MultipleLineChartComponent,
+    GroupedBarChartComponent,
     PieChartComponent,
     LineChartComponent,
-    GroupedBarChartComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
@@ -34,7 +36,7 @@ import * as d3 from 'd3';
 export class AppComponent implements OnInit {
   stackedData!: GroupStackedData;
 
-  barData: DepartmentEntry[] = [];
+  groupedBarData: DepartmentEntry[] = [];
 
   constructor(private dataService: DataService) {}
 
@@ -47,7 +49,6 @@ export class AppComponent implements OnInit {
     this.dataService
       .getParsedData('assets/population.csv')
       .subscribe((data) => {
-        // this.population = data;
         const stacks = setStacks(data, 'year', 'gender', 'age_group', 'value');
         this.stackedData = {
           title: 'Population by year, gender and age group (in millions)',
@@ -74,7 +75,7 @@ export class AppComponent implements OnInit {
     this.dataService
       .getParsedJson('assets/us-spending-since-2000-v3.json')
       .subscribe((data: DataType[]) => {
-        this.barData = data
+        this.groupedBarData = data
           .map((element) => {
             const department = element.Department;
             const objectEntries = Object.entries(element);
@@ -88,9 +89,6 @@ export class AppComponent implements OnInit {
               }));
           })
           .flat();
-
-
-        console.log('data', this.barData);
       });
   }
 }

@@ -4,7 +4,7 @@ import {
   GroupStackDataElement,
   GroupStackConfig,
   GroupStackedData,
-} from '../models/chart.models';
+} from '../../charts/models/chart.models';
 import { UpdateObjectWithPartialValues } from '../../helpers/grouped-bar.helper';
 import { ChartDimensionsService } from '../../services/chart-dimensions.service';
 
@@ -278,9 +278,6 @@ export class BarChartComponent implements OnInit, OnChanges {
     const domain = Array.from(
       new Set(this.data.data.map((d: GroupStackDataElement) => d.domain))
     ).sort(d3.ascending);
-
-    console.log('domain',domain);
-
     const range = [0, this.dimensions.innerWidth];
 
     this.scales.x = d3.scaleBand().domain(domain).range(range);
@@ -306,7 +303,6 @@ export class BarChartComponent implements OnInit, OnChanges {
     const domain = Array.from(
       new Set(this.data.data.map((d: GroupStackDataElement) => d.group))
     ).sort(d3.ascending);
-    console.log('group',domain);
     const range = [0, this.scales.x.bandwidth()];
 
     this.scales.group = d3.scaleBand().domain(domain).range(range);

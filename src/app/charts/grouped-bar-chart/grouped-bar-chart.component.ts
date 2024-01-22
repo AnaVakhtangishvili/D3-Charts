@@ -20,6 +20,8 @@ import * as d3 from 'd3';
 export class GroupedBarChartComponent implements OnInit, OnChanges {
   @Input() chartData: DepartmentEntry[] = [];
 
+  groupedBarData: GroupedBarData[] = [];
+
   host: any;
   svg: any;
 
@@ -35,9 +37,7 @@ export class GroupedBarChartComponent implements OnInit, OnChanges {
 
   scales: any = {};
 
-  margin = { top: 40, right: 20, bottom: 60, left: 80 };
-
-  groupedBarData: GroupedBarData[] = [];
+  margin = { top: 40, right: 20, bottom: 200, left: 100 };
 
   constructor(
     private element: ElementRef,
@@ -79,14 +79,14 @@ export class GroupedBarChartComponent implements OnInit, OnChanges {
       .attr(
         'transform',
         `translate(${this.dimensions.marginLeft}, ${this.dimensions.marginBottom})`
-      );
+      ).style('font-size', '1rem');
 
     this.yAxisContainer = this.svg
       .append('g')
       .attr(
         'transform',
         `translate(${this.dimensions.marginLeft}, ${this.dimensions.marginTop})`
-      );
+      ).style('font-size', '1rem');
 
     this.chartContainer = this.svg
       .append('g')
@@ -100,7 +100,7 @@ export class GroupedBarChartComponent implements OnInit, OnChanges {
       .attr(
         'transform',
         `translate(${this.dimensions.marginLeft}, ${
-          this.dimensions.marginBottom + 30
+          this.dimensions.marginBottom + 50
         })`
       );
 
@@ -119,7 +119,7 @@ export class GroupedBarChartComponent implements OnInit, OnChanges {
       .style('font-size', '1.5rem')
       .attr(
         'transform',
-        `translate(${this.dimensions.marginLeft - 60}, ${
+        `translate(${this.dimensions.marginLeft - 70}, ${
           this.dimensions.middleHeight
         })`
       )
@@ -164,8 +164,7 @@ export class GroupedBarChartComponent implements OnInit, OnChanges {
     this.scales.group = d3
       .scaleBand()
       .domain(groups)
-      // this.groupedBarData.map((d) => d.year)
-      .range([0, this.scales.x.bandwidth()])
+      .range([0, this.scales.x.bandwidth()]);
   }
 
   setColorScale() {
@@ -197,28 +196,48 @@ export class GroupedBarChartComponent implements OnInit, OnChanges {
     this.yAxisContainer.selectAll('.tick line').attr('stroke', '#ddd');
   }
 
-  setLegend() {}
+  setLegend() {
+    const legend = this.legendContainer
+      .selectAll('g')
+      .data(this.groupedBarData[0].data)
+      .join('g')
+      .attr(
+        'transform',
+        (d: DepartmentEntry, i: number) => `translate(0, ${40 * i})`
+      );
+    legend
+      .append('rect')
+      .attr('width', 20)
+      .attr('height', 20)
+      .attr('fill', (d: DepartmentEntry, i: number) =>
+        this.scales.color(d.department)
+      );
+    legend
+      .append('text')
+      .attr('x', 30)
+      .attr('y', 15)
+      .text((d: DepartmentEntry) => d.department);
+  }
 
   drawBars() {
-    console.log(
-      this.groupedBarData,
-      this.groupedBarData.map((d) => d.data)
-    );
     this.chartContainer
       .selectAll('g.group')
       .data(this.groupedBarData.map((d) => d.year))
       .join('g')
       .attr('class', 'group')
       .style('fill', (d: string) => {
-        console.log(d);
-        return this.scales.color(d)})
+        return this.scales.color(d);
+      })
       .selectAll('rect.data')
       .data((d: string) => {
-        console.log(d);
         return this.groupedBarData.find((e) => e.year === d)?.data;
       })
       .join('rect')
-      .attr('x', (d: DepartmentEntry) => this.scales.x(d.year) + this.scales.group(d.department))
+      .attr(
+        'x',
+        (d: DepartmentEntry) =>
+          this.scales.x(d.year) + this.scales.group(d.department)
+      )
       .attr('y', (d: DepartmentEntry) =>
         this.scales.y(Number(d.expense) / 10e6)
       )
@@ -229,23 +248,6 @@ export class GroupedBarChartComponent implements OnInit, OnChanges {
           this.dimensions.innerHeight - this.scales.y(Number(d.expense) / 10e6)
       )
       .attr('fill', (d: DepartmentEntry) => this.scales.color(d.department));
-
-    // create legend
-    const legend = this.legendContainer
-      .selectAll('g')
-      .data(this.groupedBarData[0].data)
-      .join('g')
-      .attr('transform', (d: any, i: any) => `translate(${i * 100}, 0)`);
-    legend
-      .append('rect')
-      .attr('width', 20)
-      .attr('height', 20)
-      .attr('fill', (d: any, i: any) => this.scales.color(d.department));
-    legend
-      .append('text')
-      .attr('x', 30)
-      .attr('y', 15)
-      .text((d: any) => d.domain);
   }
 
   updateChart() {
