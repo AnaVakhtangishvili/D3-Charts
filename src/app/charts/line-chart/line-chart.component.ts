@@ -161,7 +161,8 @@ export class LineChartComponent implements OnInit {
       .axisLeft(this.scales.y)
       .tickSizeOuter(0)
       .tickSizeInner(-this.dimensions.innerWidth)
-      .ticks(8);
+      .ticks(8)
+      .tickFormat((d) => (+d > 0 ? `${d3.format('$,.0f')(+d)}m` : '0'));
 
     this.xAxisContainer.call(this.xAxis);
     this.xAxisContainer

@@ -105,23 +105,23 @@ export class GroupedBarChartComponent implements OnInit {
       .attr('text-anchor', 'middle')
       .attr('font-weight', 'bold');
 
-    this.yLabel = this.svg
-      .append('g')
-      .style('font-size', '1.5rem')
-      .attr(
-        'transform',
-        `translate(${this.dimensions.marginLeft - 70}, ${
-          this.dimensions.middleInnerHeight
-        })`
-      )
-      .append('text')
-      .attr('text-anchor', 'middle')
-      .attr('transform', 'rotate(-90)');
+    // this.yLabel = this.svg
+    //   .append('g')
+    //   .style('font-size', '1.5rem')
+    //   .attr(
+    //     'transform',
+    //     `translate(${this.dimensions.marginLeft - 70}, ${
+    //       this.dimensions.middleInnerHeight
+    //     })`
+    //   )
+    //   .append('text')
+    //   .attr('text-anchor', 'middle')
+    //   .attr('transform', 'rotate(-90)');
   }
 
   setLabels() {
     this.title.text('U.S. Departments spending from 2018-2022');
-    this.yLabel.text('Spending in million USD');
+    // this.yLabel.text('Spending in million USD');
   }
 
   setParameters() {
@@ -181,7 +181,8 @@ export class GroupedBarChartComponent implements OnInit {
       .axisLeft(this.scales.y)
       .ticks(7)
       .tickSizeOuter(0)
-      .tickSizeInner(-this.dimensions.innerWidth);
+      .tickSizeInner(-this.dimensions.innerWidth)
+      .tickFormat((d) => (+d > 0 ? `${d3.format('$,.0f')(+d)}m` : '0'));
 
     this.yAxisContainer.call(this.yAxis);
     this.yAxisContainer.selectAll('.tick line').attr('stroke', '#ddd');
@@ -211,7 +212,6 @@ export class GroupedBarChartComponent implements OnInit {
   }
 
   drawBars() {
-    // remove bottom border radius
     this.chartContainer
       .selectAll('g.group')
       .data(this.groupedBarData.map((d) => d.year))

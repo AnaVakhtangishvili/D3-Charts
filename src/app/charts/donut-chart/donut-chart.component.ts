@@ -61,13 +61,13 @@ export class DonutChartComponent implements OnInit {
     this.setDimensions();
     this.setElements();
     this.updateChart();
+    this.setLegend();
   }
 
   setData() {
     this.yearSelectionControl.valueChanges.subscribe((value) => {
       this.filterChartData(value);
       this.updateChart();
-      console.log(this.mappedData);
     });
   }
 
@@ -163,14 +163,19 @@ export class DonutChartComponent implements OnInit {
       .attr(
         'transform',
         (d: DepartmentEntry, i: number) => `translate(0, ${40 * i})`
-      );
+      )
+      .attr('cursor', 'pointer')
+      .on('mouseover', (event: MouseEvent, d: DepartmentEntry) => {
+        this.highlightDepartment(d.department);
+      })
+      .on('mouseleave', () => this.restoreOpacity());
 
     legend
       .append('rect')
       .attr('width', 20)
       .attr('height', 20)
       .attr('fill', (d: DepartmentEntry) => this.colors(d.department))
-      .attr('rx', 5)
+      .attr('rx', 5);
 
     legend
       .append('text')
@@ -191,6 +196,12 @@ export class DonutChartComponent implements OnInit {
       .join('path')
       .attr('d', this.arc)
       .attr('fill', (d: DonutData) => this.colors(d.data.department))
+      .attr('cursor', 'pointer')
+      .on('mouseover', (event: MouseEvent, d: DonutData) => {
+        this.setTooltips(event, d);
+        this.highlightDepartment(d.data.department);
+      })
+      .on('mouseleave', () => this.restoreOpacity())
       .transition()
       .duration(800)
       .attrTween('d', (d: any) => {
@@ -223,11 +234,58 @@ export class DonutChartComponent implements OnInit {
     return ((+data.data.expense / total) * 100).toFixed(2) + '%';
   }
 
+  setTooltips(event: MouseEvent, sectionData: DonutData) {
+    const tooltip = d3
+      .select('body')
+      .append('div')
+      .attr('class', 'tooltip')
+      .style('position', 'absolute')
+      .style('background', '#fff')
+      .style('padding', '5px')
+      .style('border', '1px solid #ccc')
+      .style('border-radius', '5px');
+
+    const x = event.pageX + 10;
+    const y = event.pageY - 10;
+    const expense = d3.format('$,.0f')(+sectionData.data.expense);
+
+    tooltip.style('left', `${x}px`).style('top', `${y}px`).html(`
+    <p class="tooltip__percentage">Year: ${sectionData.data.year}</p>
+    <p class="tooltip__title">Department: ${sectionData.data.department}</p>
+    <p class="tooltip__value">Spending: ${expense}</p>
+    <p class="tooltip__percentage">Percentage: ${this.calculatePercentage(
+      sectionData
+    )}</p>`);
+
+    d3.select(event.target as any).on('mouseout', () => tooltip.remove());
+  }
+
+  highlightDepartment(department: string) {
+    this.pieContainer
+      .selectAll('path')
+      .attr('opacity', (d: DonutData) =>
+        d.data.department === department ? 1 : 0.5
+      );
+
+    this.legendContainer
+      .selectAll('rect')
+      .attr('opacity', (d: any) => (d.department === department ? 1 : 0.5));
+
+    this.legendContainer
+      .selectAll('text')
+      .attr('opacity', (d: any) => (d.department === department ? 1 : 0.5));
+  }
+
+  restoreOpacity() {
+    this.pieContainer.selectAll('path').attr('opacity', 1);
+    this.legendContainer.selectAll('rect').attr('opacity', 1);
+    this.legendContainer.selectAll('text').attr('opacity', 1);
+  }
+
   updateChart() {
     this.pieContainer.selectAll('path').remove();
     this.pieContainer.selectAll('text.percentage').remove();
     this.setParams();
-    this.setLegend();
     this.drawChart();
   }
 }
