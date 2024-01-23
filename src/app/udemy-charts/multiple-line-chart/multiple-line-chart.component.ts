@@ -46,8 +46,6 @@ export class MultipleLineChartComponent implements OnInit, OnChanges {
     this.setDimensions();
     this.setElements();
     this.updateChart();
-
-    console.log('data', this);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
