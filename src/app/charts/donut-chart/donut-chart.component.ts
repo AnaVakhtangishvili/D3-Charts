@@ -189,6 +189,8 @@ export class DonutChartComponent implements OnInit {
   }
 
   drawChart() {
+    if (!this.mappedData[0]?.data.length) return;
+
     const pieData = this.pie(this.mappedData[0]?.data);
 
     this.pieContainer

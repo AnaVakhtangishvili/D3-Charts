@@ -192,7 +192,7 @@ export class GroupedBarChartComponent implements OnInit {
     const legend = this.legendContainer
       .selectAll('g')
       ?.data(this.groupedBarData[0]?.data)
-      .join('g')
+      ?.join('g')
       .attr(
         'transform',
         (d: DepartmentEntry, i: number) => `translate(0, ${40 * i})`
