@@ -207,7 +207,7 @@ export class LineChartComponent implements OnInit {
     const tooltip = d3
       .select('body')
       .append('div')
-      .attr('class', 'tooltip')
+      .attr('class', 'line-tooltip')
       .style('position', 'absolute')
       .style('background', '#fff')
       .style('padding', '5px')
@@ -241,14 +241,14 @@ export class LineChartComponent implements OnInit {
           .duration(2000);
       })
       .on('mouseleave', () => {
-        d3.select('.tooltip').style('display', 'none');
+        d3.select('.line-tooltip').style('display', 'none');
       });
   }
 
   removeElements() {
     this.chartContainer.selectAll('g.line-chart').remove();
     this.chartContainer.selectAll('g.circles').remove();
-    d3.select('.tooltip').remove();
+    d3.select('.line-tooltip').remove();
   }
 
   updateChart() {
