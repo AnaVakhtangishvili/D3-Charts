@@ -1,4 +1,4 @@
-<div class="charts-container">
+<div class="charts-container" *ngIf="data">
   <app-grouped-bar-chart [chartData]="data"></app-grouped-bar-chart>
   <app-line-chart [chartData]="data"></app-line-chart>
   <app-donut-chart [chartData]="data"></app-donut-chart>

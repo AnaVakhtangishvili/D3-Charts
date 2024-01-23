@@ -159,7 +159,7 @@ export class DonutChartComponent implements OnInit {
   setLegend() {
     const legend = this.legendContainer
       .selectAll('g')
-      .data(this.mappedData[0].data)
+      ?.data(this.mappedData[0]?.data)
       .join('g')
       .attr(
         'transform',
@@ -189,7 +189,7 @@ export class DonutChartComponent implements OnInit {
   }
 
   drawChart() {
-    const pieData = this.pie(this.mappedData[0].data);
+    const pieData = this.pie(this.mappedData[0]?.data);
 
     this.pieContainer
       .selectAll('path.donut')
@@ -234,7 +234,7 @@ export class DonutChartComponent implements OnInit {
 
   calculatePercentage(data: DepartmentEntry) {
     const total = d3.sum(
-      this.mappedData[0].data,
+      this.mappedData[0]?.data,
       (d: DepartmentEntry) => +d.expense
     );
     return ((+data.expense / total) * 100).toFixed(2) + '%';

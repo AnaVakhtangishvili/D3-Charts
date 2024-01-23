@@ -379,7 +379,7 @@ export class BarChartComponent implements OnInit, OnChanges {
       .attr('class', 'data')
       // .attr('x', (d: any) => this.scales.x(d.data[0] + ''))
       .attr('x', (d: any) => {
-        const [domain, group] = d.data[0].split('-');
+        const [domain, group] = d.data[0]?.split('-');
         return this.scales.x(domain) + this.scales.group(group);
       })
       .attr('width', this.scales.group.bandwidth())

@@ -190,7 +190,7 @@ export class LineChartComponent implements OnInit {
       .attr('stroke-linecap', 'round')
       .attr('d', line)
       .style('stroke', (d: DepartmentEntry[]) =>
-        this.scales.color(d[0].department)
+        this.scales.color(d[0]?.department)
       );
 
     const totalLength = path.node().getTotalLength();

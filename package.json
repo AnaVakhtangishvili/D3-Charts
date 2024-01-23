@@ -1,5 +1,5 @@
 {
-  "name": "d3-charts",
+  "name": "charts",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -7,7 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:D3-Charts": "node dist/d3-charts/server/server.mjs"
+    "serve:ssr:charts": "node dist/charts/server/server.mjs"
   },
   "private": true,
   "dependencies": {
@@ -46,5 +46,9 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.2.2"
-  }
+  },
+  "description": "This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.9.",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC"
 }

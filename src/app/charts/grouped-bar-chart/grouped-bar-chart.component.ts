@@ -191,7 +191,7 @@ export class GroupedBarChartComponent implements OnInit {
   setLegend() {
     const legend = this.legendContainer
       .selectAll('g')
-      .data(this.groupedBarData[0].data)
+      ?.data(this.groupedBarData[0]?.data)
       .join('g')
       .attr(
         'transform',
