@@ -199,7 +199,7 @@ export class DonutChartComponent implements OnInit {
       .attr('fill', (d: DonutData) => this.colors(d.data.department))
       .attr('cursor', 'pointer')
       .on('mouseover', (event: MouseEvent, d: DonutData) => {
-        this.setTooltips(event, d);
+        this.setTooltips(event, d.data);
         this.highlightDepartment(d.data.department);
       })
       .on('mouseleave', () => this.restoreOpacity())
@@ -218,7 +218,7 @@ export class DonutChartComponent implements OnInit {
       .data(pieData)
       .join('text')
       .attr('class', 'percentage')
-      .text((d: DonutData) => this.calculatePercentage(d))
+      .text((d: DonutData) => this.calculatePercentage(d.data))
       .attr('transform', (d: PieData) => `translate(${this.arc.centroid(d)})`)
       .attr('dy', '0.35rem')
       .attr('text-anchor', 'middle')
@@ -227,20 +227,20 @@ export class DonutChartComponent implements OnInit {
       .attr('fill', 'white')
       .attr('cursor', 'pointer')
       .on('mouseover', (event: MouseEvent, d: DonutData) => {
-        this.setTooltips(event, d);
+        this.setTooltips(event, d.data);
         this.highlightDepartment(d.data.department);
       });
   }
 
-  calculatePercentage(data: DonutData) {
+  calculatePercentage(data: DepartmentEntry) {
     const total = d3.sum(
       this.mappedData[0].data,
       (d: DepartmentEntry) => +d.expense
     );
-    return ((+data.data.expense / total) * 100).toFixed(2) + '%';
+    return ((+data.expense / total) * 100).toFixed(2) + '%';
   }
 
-  setTooltips(event: MouseEvent, sectionData: DonutData) {
+  setTooltips(event: MouseEvent, data: DepartmentEntry) {
     const tooltip = d3
       .select('body')
       .append('div')
@@ -253,13 +253,13 @@ export class DonutChartComponent implements OnInit {
 
     const x = event.pageX + 10;
     const y = event.pageY - 10;
-    const expense = d3.format('$,.0f')(+sectionData.data.expense);
+    const expense = d3.format('$,.0f')(+data.expense);
 
     tooltip.style('left', `${x}px`).style('top', `${y}px`).html(`
-    <p>Year: ${sectionData.data.year}</p>
-    <p>Department: ${sectionData.data.department}</p>
-    <p>Spending: ${expense}</p>
-    <p>Percentage: ${this.calculatePercentage(sectionData)}</p>`);
+      <p><strong>Year:</strong> ${data.year}</p>
+      <p><strong>Department:</strong> ${data.department}</p>
+      <p><strong>Spending:</strong> ${expense}</p>
+      <p><strong>Percentage:</strong> ${this.calculatePercentage(data)}</p>`);
 
     d3.select(event.target as any).on('mouseout', () => tooltip.remove());
   }

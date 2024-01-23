@@ -231,9 +231,9 @@ export class LineChartComponent implements OnInit {
         tooltip
           .style('display', 'block')
           .html(
-            `<p">Year: ${d.year}</p>
-            <p">Department: ${d.department}</p>
-            <p">Spending: ${d3.format('$,.0f')(+d.expense)}</p>`
+            `<p><strong>Year:</strong> ${d.year}</p>
+            <p><strong>Department:</strong> ${d.department}</p>
+            <p><strong>Spending:</strong> ${d3.format('$,.0f')(+d.expense)}</p>`
           )
           .style('left', event.pageX + 20 + 'px')
           .style('top', event.pageY - 20 + 'px')

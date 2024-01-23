@@ -239,7 +239,45 @@ export class GroupedBarChartComponent implements OnInit {
         (d: DepartmentEntry) =>
           this.dimensions.innerHeight - this.scales.y(Number(d.expense) / 10e6)
       )
-      .attr('fill', (d: DepartmentEntry) => this.scales.color(d.department));
+      .attr('fill', (d: DepartmentEntry) => this.scales.color(d.department))
+      .attr('cursor', 'pointer')
+      .on('mouseover', (event: MouseEvent, d: DepartmentEntry) => {
+        this.highlightDepartment(d.department);
+        this.setTooltip(event, d);
+      })
+      .on('mouseleave', () => {
+        this.chartContainer.selectAll('rect').attr('opacity', 1);
+        d3.selectAll('div.tooltip').remove();
+      });
+  }
+
+  highlightDepartment(department: string) {
+    this.chartContainer
+      .selectAll('rect')
+      .attr('opacity', (d: DepartmentEntry) =>
+        d.department === department ? 1 : 0.5
+      );
+  }
+
+  setTooltip(event: MouseEvent, data: DepartmentEntry) {
+    const tooltip = d3
+      .select('body')
+      .append('div')
+      .attr('class', 'tooltip')
+      .style('position', 'absolute')
+      .style('background', '#fff')
+      .style('padding', '5px')
+      .style('border', '1px solid #ccc')
+      .style('border-radius', '5px');
+
+    tooltip
+      .html(
+        `<p><strong>Year:</strong> ${data.year}</p>
+        <p><strong>Department:</strong> ${data.department}</p>
+        <p><strong>Spending:</strong> ${d3.format('$,.0f')(+data.expense)}</p>`
+      )
+      .style('left', event.pageX + 'px')
+      .style('top', event.pageY + 'px');
   }
 
   updateChart() {
