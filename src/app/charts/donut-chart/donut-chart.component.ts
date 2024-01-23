@@ -157,6 +157,9 @@ export class DonutChartComponent implements OnInit {
   }
 
   setLegend() {
+    if (!this.mappedData || !this.mappedData[0] || !this.mappedData[0].data) {
+      return;
+    }
     const legend = this.legendContainer
       .selectAll('g')
       ?.data(this.mappedData[0]?.data)
