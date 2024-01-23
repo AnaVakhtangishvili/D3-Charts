@@ -27,6 +27,36 @@ export interface ChartMargins {
   left: number;
 }
 
+export interface PieDataElement {
+  id: string | number;
+  label: string;
+  value: number;
+}
+
+export interface PieData {
+  title: string;
+  data: PieDataElement[];
+}
+
+export interface PieConfig {
+  innerRadiusCoefficient: number;
+  hiddenOpacity: number;
+  transition: number;
+  margin: ChartMargins;
+  legendItem: {
+    symbolSize: number;
+    height: number;
+    fontsize: number;
+    textSeparator: number;
+  };
+  arcs: {
+    stroke: string;
+    strokeWidth: number;
+    radius: number;
+    padAngle: number;
+  };
+}
+
 // my models----------------------------------------------------
 export interface DataType {
   [year: string]: string;
@@ -42,4 +72,13 @@ export interface DepartmentEntry {
 export interface GroupedBarData {
   year: string;
   data: DepartmentEntry[];
+}
+
+export interface DonutData {
+  data: DepartmentEntry;
+  endAngle: number;
+  index: number;
+  padAngle: number;
+  startAngle: number;
+  value: number;
 }

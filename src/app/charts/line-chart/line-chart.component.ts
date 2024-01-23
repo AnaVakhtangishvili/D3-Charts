@@ -1,12 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  Input,
-  OnChanges,
-  OnInit,
-  SimpleChanges,
-  signal,
-} from '@angular/core';
+import { Component, ElementRef, Input, OnInit } from '@angular/core';
 import { DepartmentEntry } from '../models/chart.models';
 import { ChartDimensionsService } from '../../services/chart-dimensions.service';
 import * as d3 from 'd3';
@@ -110,7 +102,7 @@ export class LineChartComponent implements OnInit {
 
     this.chartContainer = this.svg
       .append('g')
-      .attr('class', 'chartContainer')
+      .attr('class', 'chart-container')
       .attr(
         'transform',
         `translate(${this.dimensions.marginLeft}, ${this.dimensions.marginTop})`
@@ -124,7 +116,8 @@ export class LineChartComponent implements OnInit {
         'transform',
         `translate(${this.dimensions.middleInnerWidth}, ${this.dimensions.middleMarginTop})`
       )
-      .attr('text-anchor', 'middle');
+      .attr('text-anchor', 'middle')
+      .attr('font-weight', 'bold');
   }
 
   setLabels() {
@@ -186,11 +179,9 @@ export class LineChartComponent implements OnInit {
       .x((d: any) => this.scales.x(d.year))
       .y((d: any) => this.scales.y(d.expense / 10e6));
 
-    const lineChart = this.chartContainer
+    const path = this.chartContainer
       .append('g')
-      .attr('class', 'lineChart');
-
-    lineChart
+      .attr('class', 'line-chart')
       .append('path')
       .datum(this.filteredChartData)
       .attr('fill', 'none')
@@ -200,10 +191,20 @@ export class LineChartComponent implements OnInit {
       .style('stroke', (d: DepartmentEntry[]) =>
         this.scales.color(d[0].department)
       );
+
+    const totalLength = path.node().getTotalLength();
+
+    path
+      .attr('stroke-dasharray', totalLength + ' ' + totalLength)
+      .attr('stroke-dashoffset', totalLength)
+      .transition()
+      .duration(800)
+      .attr('stroke-dashoffset', 0);
   }
 
   updateChart() {
-    this.chartContainer.selectAll('g.lineChart').remove();
+    this.chartContainer.selectAll('g.line-chart').remove();
+    this.setDimensions();
     this.setLabels();
     this.setParameters();
     this.setAxes();

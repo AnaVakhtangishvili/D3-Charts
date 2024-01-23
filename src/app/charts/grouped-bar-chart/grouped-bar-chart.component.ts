@@ -1,11 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  Input,
-  OnChanges,
-  OnInit,
-  SimpleChanges,
-} from '@angular/core';
+import { Component, ElementRef, Input, OnInit } from '@angular/core';
 import { DepartmentEntry, GroupedBarData } from '../models/chart.models';
 import { ChartDimensionsService } from '../../services/chart-dimensions.service';
 import * as d3 from 'd3';
@@ -17,7 +10,7 @@ import * as d3 from 'd3';
   templateUrl: './grouped-bar-chart.component.html',
   styleUrl: './grouped-bar-chart.component.scss',
 })
-export class GroupedBarChartComponent implements OnInit, OnChanges {
+export class GroupedBarChartComponent implements OnInit {
   @Input() chartData: DepartmentEntry[] = [];
 
   groupedBarData: GroupedBarData[] = [];
@@ -42,12 +35,12 @@ export class GroupedBarChartComponent implements OnInit, OnChanges {
   constructor(
     private element: ElementRef,
     private dimensions: ChartDimensionsService
-  ) {
-    this.host = d3.select(this.element.nativeElement);
-  }
+  ) {}
 
   ngOnInit() {
+    this.host = d3.select(this.element.nativeElement);
     this.svg = this.host.select('svg');
+
     this.groupedBarData = d3
       .groups(this.chartData, (d: DepartmentEntry) => d.year)
       .slice(-5)
@@ -58,11 +51,6 @@ export class GroupedBarChartComponent implements OnInit, OnChanges {
 
     this.setDimensions();
     this.setElements();
-    this.updateChart();
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (!this.svg) return;
     this.updateChart();
   }
 
@@ -114,7 +102,8 @@ export class GroupedBarChartComponent implements OnInit, OnChanges {
         'transform',
         `translate(${this.dimensions.middleInnerWidth}, ${this.dimensions.middleMarginTop})`
       )
-      .attr('text-anchor', 'middle');
+      .attr('text-anchor', 'middle')
+      .attr('font-weight', 'bold');
 
     this.yLabel = this.svg
       .append('g')
@@ -222,6 +211,7 @@ export class GroupedBarChartComponent implements OnInit, OnChanges {
   }
 
   drawBars() {
+    // remove bottom border radius
     this.chartContainer
       .selectAll('g.group')
       .data(this.groupedBarData.map((d) => d.year))

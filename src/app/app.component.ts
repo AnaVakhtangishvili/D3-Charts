@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { BarChartComponent } from './udemy-charts/bar-chart/bar-chart.component';
-import { PieChartComponent } from './charts/pie-chart/pie-chart.component';
 import { LineChartComponent } from './charts/line-chart/line-chart.component';
 import { DataService } from './services/data.service';
 import { HttpClientModule } from '@angular/common/http';
@@ -15,6 +14,8 @@ import {
 import { GroupedBarChartComponent } from './charts/grouped-bar-chart/grouped-bar-chart.component';
 import * as d3 from 'd3';
 import { MultipleLineChartComponent } from './udemy-charts/multiple-line-chart/multiple-line-chart.component';
+import { DonutChartComponent } from './charts/donut-chart/donut-chart.component';
+import { PieChartComponent } from './udemy-charts/pie-chart/pie-chart.component';
 
 @Component({
   selector: 'app-root',
@@ -26,9 +27,10 @@ import { MultipleLineChartComponent } from './udemy-charts/multiple-line-chart/m
     HttpClientModule,
     BarChartComponent,
     MultipleLineChartComponent,
-    GroupedBarChartComponent,
     PieChartComponent,
+    GroupedBarChartComponent,
     LineChartComponent,
+    DonutChartComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',

@@ -75,6 +75,10 @@ export class ChartDimensionsService {
     return this.height - this.margins.bottom / 2;
   }
 
+  get radius(): number {
+    return Math.min(this.innerWidth, this.innerHeight) / 2;
+  }
+
   constructor() {}
 
   defineDimensions(dimensions: DOMRect, margins: ChartMargins): void {

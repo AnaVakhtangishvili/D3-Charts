@@ -6,11 +6,10 @@ svg {
 .container {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 2rem;
 }
 
 .select {
   width: 400px;
-  margin-left: 6rem;
+  margin-right: 16rem;
+  align-self: flex-end;
 }
