@@ -9,10 +9,10 @@ export class ChartDimensionsService {
   private margins: ChartMargins = { top: 0, right: 0, bottom: 0, left: 0 };
 
   get width(): number {
-    return this.dimensions.width;
+    return this.dimensions?.width;
   }
   get height(): number {
-    return this.dimensions.height;
+    return this.dimensions?.height;
   }
 
   get middleWidth(): number {
