@@ -2,11 +2,12 @@ import { Component, ElementRef, Input, OnInit } from '@angular/core';
 import { DepartmentEntry, GroupedBarData } from '../models/chart.models';
 import { ChartDimensionsService } from '../../services/chart-dimensions.service';
 import * as d3 from 'd3';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-grouped-bar-chart',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './grouped-bar-chart.component.html',
   styleUrl: './grouped-bar-chart.component.scss',
 })
