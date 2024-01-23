@@ -56,6 +56,9 @@ export class GroupedBarChartComponent implements OnInit {
   }
 
   setDimensions() {
+    if (!this.svg.node()) {
+      return;
+    }
     this.dimensions.defineDimensions(
       this.svg.node().getBoundingClientRect(),
       this.margin
@@ -190,10 +193,13 @@ export class GroupedBarChartComponent implements OnInit {
   }
 
   setLegend() {
-    if (!this.groupedBarData[0]?.data || !Array.isArray(this.groupedBarData[0]?.data)) {
+    if (
+      !this.groupedBarData[0]?.data ||
+      !Array.isArray(this.groupedBarData[0]?.data)
+    ) {
       return;
     }
-  
+
     const legend = this.legendContainer
       .selectAll('g')
       .data(this.groupedBarData[0].data)
@@ -202,7 +208,7 @@ export class GroupedBarChartComponent implements OnInit {
         'transform',
         (d: DepartmentEntry, i: number) => `translate(0, ${40 * i})`
       );
-  
+
     legend
       .append('rect')
       .attr('width', 20)
@@ -210,7 +216,7 @@ export class GroupedBarChartComponent implements OnInit {
       .attr('fill', (d: DepartmentEntry, i: number) =>
         this.scales.color(d.department)
       );
-  
+
     legend
       .append('text')
       .attr('x', 30)
