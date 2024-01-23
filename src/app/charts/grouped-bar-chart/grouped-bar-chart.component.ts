@@ -182,7 +182,7 @@ export class GroupedBarChartComponent implements OnInit {
       .ticks(7)
       .tickSizeOuter(0)
       .tickSizeInner(-this.dimensions.innerWidth)
-      .tickFormat((d) => (+d > 0 ? `${d3.format('$,.0f')(+d)}m` : '0'));
+      .tickFormat((d) => (+d > 0 ? `${d3.format('$,.0f')(+d)} M` : '0'));
 
     this.yAxisContainer.call(this.yAxis);
     this.yAxisContainer.selectAll('.tick line').attr('stroke', '#ddd');

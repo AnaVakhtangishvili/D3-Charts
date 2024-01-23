@@ -11,6 +11,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { on } from 'events';
 
 @Component({
   selector: 'app-donut-chart',
@@ -223,7 +224,12 @@ export class DonutChartComponent implements OnInit {
       .attr('text-anchor', 'middle')
       .attr('font-size', '1rem')
       .attr('font-weight', 'bold')
-      .attr('fill', 'white');
+      .attr('fill', 'white')
+      .attr('cursor', 'pointer')
+      .on('mouseover', (event: MouseEvent, d: DonutData) => {
+        this.setTooltips(event, d);
+        this.highlightDepartment(d.data.department);
+      });
   }
 
   calculatePercentage(data: DonutData) {
@@ -250,12 +256,10 @@ export class DonutChartComponent implements OnInit {
     const expense = d3.format('$,.0f')(+sectionData.data.expense);
 
     tooltip.style('left', `${x}px`).style('top', `${y}px`).html(`
-    <p class="tooltip__percentage">Year: ${sectionData.data.year}</p>
-    <p class="tooltip__title">Department: ${sectionData.data.department}</p>
-    <p class="tooltip__value">Spending: ${expense}</p>
-    <p class="tooltip__percentage">Percentage: ${this.calculatePercentage(
-      sectionData
-    )}</p>`);
+    <p>Year: ${sectionData.data.year}</p>
+    <p>Department: ${sectionData.data.department}</p>
+    <p>Spending: ${expense}</p>
+    <p>Percentage: ${this.calculatePercentage(sectionData)}</p>`);
 
     d3.select(event.target as any).on('mouseout', () => tooltip.remove());
   }

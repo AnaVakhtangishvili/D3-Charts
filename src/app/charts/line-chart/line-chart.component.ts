@@ -162,7 +162,7 @@ export class LineChartComponent implements OnInit {
       .tickSizeOuter(0)
       .tickSizeInner(-this.dimensions.innerWidth)
       .ticks(8)
-      .tickFormat((d) => (+d > 0 ? `${d3.format('$,.0f')(+d)}m` : '0'));
+      .tickFormat((d) => (+d > 0 ? `${d3.format('$,.0f')(+d)} M` : '0'));
 
     this.xAxisContainer.call(this.xAxis);
     this.xAxisContainer
@@ -203,12 +203,61 @@ export class LineChartComponent implements OnInit {
       .attr('stroke-dashoffset', 0);
   }
 
-  updateChart() {
+  setTooltip() {
+    const tooltip = d3
+      .select('body')
+      .append('div')
+      .attr('class', 'tooltip')
+      .style('position', 'absolute')
+      .style('background', '#fff')
+      .style('padding', '5px')
+      .style('border', '1px solid #ccc')
+      .style('border-radius', '5px');
+
+    const circles = this.chartContainer
+      .append('g')
+      .attr('class', 'circles')
+      .selectAll('circle')
+      .data(this.filteredChartData)
+      .join('circle')
+      .attr('cx', (d: DepartmentEntry) => this.scales.x(d.year))
+      .attr('cy', (d: DepartmentEntry) => this.scales.y(+d.expense / 10e6))
+      .attr('r', 5)
+      .attr('fill', (d: DepartmentEntry) => this.scales.color(d.department))
+      .attr('cursor', 'pointer');
+
+    circles
+      .on('mouseover', (event: MouseEvent, d: DepartmentEntry) => {
+        tooltip
+          .style('display', 'block')
+          .html(
+            `<p">Year: ${d.year}</p>
+            <p">Department: ${d.department}</p>
+            <p">Spending: ${d3.format('$,.0f')(+d.expense)}</p>`
+          )
+          .style('left', event.pageX + 20 + 'px')
+          .style('top', event.pageY - 20 + 'px')
+          .transition()
+          .duration(2000);
+      })
+      .on('mouseleave', () => {
+        d3.select('.tooltip').style('display', 'none');
+      });
+  }
+
+  removeElements() {
     this.chartContainer.selectAll('g.line-chart').remove();
+    this.chartContainer.selectAll('g.circles').remove();
+    d3.select('.tooltip').remove();
+  }
+
+  updateChart() {
+    this.removeElements();
     this.setDimensions();
     this.setLabels();
     this.setParameters();
     this.setAxes();
     this.drawChart();
+    this.setTooltip();
   }
 }
