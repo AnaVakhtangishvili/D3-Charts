@@ -189,25 +189,29 @@ export class GroupedBarChartComponent implements OnInit {
   }
 
   setLegend() {
+    if (!this.groupedBarData[0]?.data || !Array.isArray(this.groupedBarData[0]?.data)) {
+      return;
+    }
+  
     const legend = this.legendContainer
       .selectAll('g')
-      ?.data(this.groupedBarData[0]?.data)
-      ?.join('g')
+      .data(this.groupedBarData[0].data)
+      .join('g')
       .attr(
         'transform',
         (d: DepartmentEntry, i: number) => `translate(0, ${40 * i})`
       );
-
+  
     legend
-      ?.append('rect')
+      .append('rect')
       .attr('width', 20)
       .attr('height', 20)
       .attr('fill', (d: DepartmentEntry, i: number) =>
         this.scales.color(d.department)
       );
-
+  
     legend
-      ?.append('text')
+      .append('text')
       .attr('x', 30)
       .attr('y', 15)
       .text((d: DepartmentEntry) => d.department);
