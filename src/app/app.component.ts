@@ -12,11 +12,10 @@ import {
   GroupStackedData,
 } from './charts/models/chart.models';
 import { GroupedBarChartComponent } from './charts/grouped-bar-chart/grouped-bar-chart.component';
-import * as d3 from 'd3';
 import { MultipleLineChartComponent } from './udemy-charts/multiple-line-chart/multiple-line-chart.component';
 import { DonutChartComponent } from './charts/donut-chart/donut-chart.component';
 import { PieChartComponent } from './udemy-charts/pie-chart/pie-chart.component';
-import { Observable, map, tap } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -103,22 +102,5 @@ export class AppComponent implements OnInit {
             .flat();
         })
       );
-
-    // .subscribe((data: DataType[]) => {
-    //   this.data = data
-    //     .map((element) => {
-    //       const department = element.Department;
-    //       const objectEntries = Object.entries(element);
-
-    //       return objectEntries
-    //         .filter(([key, value]) => key !== 'Department')
-    //         .map(([key, value]) => ({
-    //           department,
-    //           year: key,
-    //           expense: value,
-    //         }));
-    //     })
-    //     .flat();
-    // });
   }
 }
