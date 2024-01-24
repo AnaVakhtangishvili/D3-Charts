@@ -140,7 +140,7 @@ export class LineChartComponent implements OnInit {
 
   setYScale() {
     const maxValue =
-      Number(d3.max(this.filteredChartData, (d) => d.expense)) / 10e6;
+      Number(d3.max(this.filteredChartData, (d) => d.expense)) / 10e5;
 
     this.scales.y = d3
       .scaleLinear()
@@ -178,7 +178,7 @@ export class LineChartComponent implements OnInit {
     const line = d3
       .line()
       .x((d: any) => this.scales.x(d.year))
-      .y((d: any) => this.scales.y(d.expense / 10e6));
+      .y((d: any) => this.scales.y(d.expense / 10e5));
 
     const path = this.chartContainer
       .append('g')
@@ -221,7 +221,7 @@ export class LineChartComponent implements OnInit {
       .data(this.filteredChartData)
       .join('circle')
       .attr('cx', (d: DepartmentEntry) => this.scales.x(d.year))
-      .attr('cy', (d: DepartmentEntry) => this.scales.y(+d.expense / 10e6))
+      .attr('cy', (d: DepartmentEntry) => this.scales.y(+d.expense / 10e5))
       .attr('r', 5)
       .attr('fill', (d: DepartmentEntry) => this.scales.color(d.department))
       .attr('cursor', 'pointer');

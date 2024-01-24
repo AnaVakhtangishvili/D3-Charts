@@ -143,7 +143,7 @@ export class GroupedBarChartComponent implements OnInit {
 
   setYScales() {
     const expenses = this.groupedBarData.map((d) => d.data).flat();
-    const maxValue = Number(d3.max(expenses, (d) => d.expense)) / 10e6;
+    const maxValue = Number(d3.max(expenses, (d) => d.expense)) / 10e5;
 
     this.scales.y = d3
       .scaleLinear()
@@ -230,13 +230,13 @@ export class GroupedBarChartComponent implements OnInit {
           this.scales.x(d.year) + this.scales.group(d.department)
       )
       .attr('y', (d: DepartmentEntry) =>
-        this.scales.y(Number(d.expense) / 10e6)
+        this.scales.y(Number(d.expense) / 10e5)
       )
       .attr('width', this.scales.group.bandwidth())
       .attr(
         'height',
         (d: DepartmentEntry) =>
-          this.dimensions.innerHeight - this.scales.y(Number(d.expense) / 10e6)
+          this.dimensions.innerHeight - this.scales.y(Number(d.expense) / 10e5)
       )
       .attr('fill', (d: DepartmentEntry) => this.scales.color(d.department))
       .attr('cursor', 'pointer')

@@ -21,7 +21,7 @@ export function setStacks(
       domain: element[0],
       group: element[1],
       stack: element[2],
-      value: element[3]/10e6,
+      value: element[3]/10e5,
     }));
 }
 
