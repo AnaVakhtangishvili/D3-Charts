@@ -16,6 +16,7 @@ import * as d3 from 'd3';
 import { MultipleLineChartComponent } from './udemy-charts/multiple-line-chart/multiple-line-chart.component';
 import { DonutChartComponent } from './charts/donut-chart/donut-chart.component';
 import { PieChartComponent } from './udemy-charts/pie-chart/pie-chart.component';
+import { Observable, map, tap } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -38,7 +39,7 @@ import { PieChartComponent } from './udemy-charts/pie-chart/pie-chart.component'
 export class AppComponent implements OnInit {
   stackedData!: GroupStackedData;
   multipleLineData!: any;
-  data: DepartmentEntry[] = [];
+  data$: Observable<DepartmentEntry[]> | undefined;
 
   constructor(private dataService: DataService) {}
 
@@ -82,23 +83,42 @@ export class AppComponent implements OnInit {
   }
 
   getGroupedBarData() {
-    this.dataService
+    this.data$ = this.dataService
       .getParsedJson('assets/us-spending-since-2000-v3.json')
-      .subscribe((data: DataType[]) => {
-        this.data = data
-          .map((element) => {
-            const department = element.Department;
-            const objectEntries = Object.entries(element);
+      .pipe(
+        map((data: DataType[]) => {
+          return data
+            .map((element) => {
+              const department = element.Department;
+              const objectEntries = Object.entries(element);
 
-            return objectEntries
-              .filter(([key, value]) => key !== 'Department')
-              .map(([key, value]) => ({
-                department,
-                year: key,
-                expense: value,
-              }));
-          })
-          .flat();
-      });
+              return objectEntries
+                .filter(([key, value]) => key !== 'Department')
+                .map(([key, value]) => ({
+                  department,
+                  year: key,
+                  expense: value,
+                }));
+            })
+            .flat();
+        })
+      );
+
+    // .subscribe((data: DataType[]) => {
+    //   this.data = data
+    //     .map((element) => {
+    //       const department = element.Department;
+    //       const objectEntries = Object.entries(element);
+
+    //       return objectEntries
+    //         .filter(([key, value]) => key !== 'Department')
+    //         .map(([key, value]) => ({
+    //           department,
+    //           year: key,
+    //           expense: value,
+    //         }));
+    //     })
+    //     .flat();
+    // });
   }
 }
