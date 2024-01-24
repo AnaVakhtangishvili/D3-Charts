@@ -56,9 +56,9 @@ export class GroupedBarChartComponent implements OnInit {
   }
 
   setDimensions() {
-    if (!this.svg.node()) {
-      return;
-    }
+    // if (!this.svg.node()) {
+    //   return;
+    // }
     this.dimensions.defineDimensions(
       this.svg.node().getBoundingClientRect(),
       this.margin
@@ -193,12 +193,12 @@ export class GroupedBarChartComponent implements OnInit {
   }
 
   setLegend() {
-    if (
-      !this.groupedBarData[0]?.data ||
-      !Array.isArray(this.groupedBarData[0]?.data)
-    ) {
-      return;
-    }
+    // if (
+    //   !this.groupedBarData[0]?.data ||
+    //   !Array.isArray(this.groupedBarData[0]?.data)
+    // ) {
+    //   return;
+    // }
 
     const legend = this.legendContainer
       .selectAll('g')
@@ -230,13 +230,9 @@ export class GroupedBarChartComponent implements OnInit {
       .data(this.groupedBarData.map((d) => d.year))
       .join('g')
       .attr('class', 'group')
-      .style('fill', (d: string) => {
-        return this.scales.color(d);
-      })
+      .style('fill', (d: string) => this.scales.color(d))
       .selectAll('rect.data')
-      .data((d: string) => {
-        return this.groupedBarData.find((e) => e.year === d)?.data;
-      })
+      .data((d: string) => this.groupedBarData.find((e) => e.year === d)?.data)
       .join('rect')
       .attr(
         'x',
@@ -255,7 +251,7 @@ export class GroupedBarChartComponent implements OnInit {
       .attr('fill', (d: DepartmentEntry) => this.scales.color(d.department))
       .attr('cursor', 'pointer')
       .on('mouseover', (event: MouseEvent, d: DepartmentEntry) => {
-        this.highlightDepartment(d.department);
+        this.highlightDepartment(d.department, d.year);
         this.setTooltip(event, d);
       })
       .on('mouseleave', () => {
@@ -264,11 +260,11 @@ export class GroupedBarChartComponent implements OnInit {
       });
   }
 
-  highlightDepartment(department: string) {
+  highlightDepartment(department: string, year: string) {
     this.chartContainer
       .selectAll('rect')
       .attr('opacity', (d: DepartmentEntry) =>
-        d.department === department ? 1 : 0.5
+        d.department === department && d.year === year? 1 : 0.5
       );
   }
 

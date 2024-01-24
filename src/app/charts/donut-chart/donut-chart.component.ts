@@ -157,9 +157,9 @@ export class DonutChartComponent implements OnInit {
   }
 
   setLegend() {
-    if (!this.mappedData || !this.mappedData[0] || !this.mappedData[0].data) {
-      return;
-    }
+    // if (!this.mappedData || !this.mappedData[0] || !this.mappedData[0].data) {
+    //   return;
+    // }
     const legend = this.legendContainer
       .selectAll('g')
       ?.data(this.mappedData[0]?.data)
@@ -192,7 +192,7 @@ export class DonutChartComponent implements OnInit {
   }
 
   drawChart() {
-    if (!this.mappedData[0]?.data.length) return;
+    // if (!this.mappedData[0]?.data.length) return;
 
     const pieData = this.pie(this.mappedData[0]?.data);
 
