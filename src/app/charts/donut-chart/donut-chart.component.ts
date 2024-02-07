@@ -1,8 +1,15 @@
-import { Component, ElementRef, Input, OnInit } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  ElementRef,
+  Input,
+  OnInit,
+  inject,
+} from '@angular/core';
 import {
   DepartmentEntry,
   DonutData,
-  PieConfig,
+  LegendConfig,
   PieData,
 } from '../models/chart.models';
 import * as d3 from 'd3';
@@ -11,7 +18,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { on } from 'events';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-donut-chart',
@@ -27,6 +34,7 @@ import { on } from 'events';
 })
 export class DonutChartComponent implements OnInit {
   @Input() chartData: DepartmentEntry[] = [];
+  private destroyRef = inject(DestroyRef);
 
   yearSelectionControl = new FormControl('2000');
   filteredChartData: DepartmentEntry[] = [];
@@ -46,7 +54,16 @@ export class DonutChartComponent implements OnInit {
 
   colors: any;
 
-  margin = { top: 70, right: 40, bottom: 10, left: 10 };
+  margin = { top: 20, right: 40, bottom: 10, left: 10 };
+
+  legendConfig: LegendConfig = {
+    rectSize: 15,
+    rectBorderRadius: 5,
+    fontSize: '0.75rem',
+    attrX: 30,
+    attrY: 5,
+    spacing: 20,
+  };
 
   constructor(
     private element: ElementRef,
@@ -66,10 +83,12 @@ export class DonutChartComponent implements OnInit {
   }
 
   setData() {
-    this.yearSelectionControl.valueChanges.subscribe((value) => {
-      this.filterChartData(value);
-      this.updateChart();
-    });
+    this.yearSelectionControl.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((value) => {
+        this.filterChartData(value);
+        this.updateChart();
+      });
   }
 
   filterChartData(year: string | null) {
@@ -100,17 +119,18 @@ export class DonutChartComponent implements OnInit {
       .append('g')
       .attr(
         'transform',
-        `translate(${
-          this.dimensions.marginLeft + this.dimensions.middleInnerWidth
-        }, ${this.dimensions.marginTop + this.dimensions.middleInnerHeight})`
+        `translate(${this.dimensions.middleWidth}, ${
+          this.dimensions.marginTop + 300
+        })`
       );
 
     this.legendContainer = this.svg
       .append('g')
+      .style('display', 'block')
       .attr(
         'transform',
         `translate(${this.dimensions.middleInnerWidth * 0.5}, ${
-          this.dimensions.marginTop + 30
+          this.dimensions.marginTop + this.legendConfig.spacing
         })`
       );
 
@@ -124,7 +144,7 @@ export class DonutChartComponent implements OnInit {
       )
       .attr('class', 'title')
       .attr('text-anchor', 'center')
-      .style('font-size', '1.5rem')
+      .style('font-size', '1rem')
       .style('font-weight', 'bold')
       .text('U.S. Departments spending by year');
   }
@@ -150,8 +170,8 @@ export class DonutChartComponent implements OnInit {
 
     this.arc = d3
       .arc()
-      .innerRadius(this.dimensions.radius * 0.5)
-      .outerRadius(this.dimensions.radius * 0.9)
+      .innerRadius(this.dimensions.radius * 0.4)
+      .outerRadius(this.dimensions.radius * 0.75)
       .cornerRadius(6)
       .padAngle(0.02);
   }
@@ -163,7 +183,8 @@ export class DonutChartComponent implements OnInit {
       .join('g')
       .attr(
         'transform',
-        (d: DepartmentEntry, i: number) => `translate(0, ${40 * i})`
+        (d: DepartmentEntry, i: number) =>
+          `translate(0, ${this.legendConfig.spacing * i})`
       )
       .attr('cursor', 'pointer')
       .on('mouseover', (event: MouseEvent, d: DepartmentEntry) => {
@@ -173,19 +194,19 @@ export class DonutChartComponent implements OnInit {
 
     legend
       .append('rect')
-      .attr('width', 20)
-      .attr('height', 20)
+      .attr('width', this.legendConfig.rectSize)
+      .attr('height', this.legendConfig.rectSize)
       .attr('fill', (d: DepartmentEntry) => this.colors(d.department))
-      .attr('rx', 5);
+      .attr('rx', this.legendConfig.rectBorderRadius);
 
     legend
       .append('text')
-      .attr('x', 30)
-      .attr('y', 5)
-      .attr('font-size', '1rem')
+      .attr('x', this.legendConfig.attrX)
+      .attr('y', this.legendConfig.attrY)
+      .attr('font-size', this.legendConfig.fontSize)
       .attr('text-anchor', 'start')
       .attr('alignment-baseline', 'hanging')
-      .text((d: any) => d.department);
+      .text((d: DepartmentEntry) => d.department);
   }
 
   drawChart() {
@@ -222,9 +243,9 @@ export class DonutChartComponent implements OnInit {
       .attr('transform', (d: PieData) => `translate(${this.arc.centroid(d)})`)
       .attr('dy', '0.35rem')
       .attr('text-anchor', 'middle')
-      .attr('font-size', '1rem')
+      .attr('font-size', `${this.legendConfig.fontSize}`)
       .attr('font-weight', 'bold')
-      .attr('fill', 'white')
+      .attr('fill', 'black')
       .attr('cursor', 'pointer')
       .on('mouseover', (event: MouseEvent, d: DonutData) => {
         this.setTooltips(event, d.data);

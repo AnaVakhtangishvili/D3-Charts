@@ -1,5 +1,7 @@
-<div class="charts-container" *ngIf="data$ | async as data">
-  <app-grouped-bar-chart [chartData]="data"></app-grouped-bar-chart>
-  <app-line-chart [chartData]="data"></app-line-chart>
-  <app-donut-chart [chartData]="data"></app-donut-chart>
+<div *ngIf="data$ | async as data">
+  <div class="w-full xl:w-3/5 grid grid-cols-1 gap-10 p-20">
+    <app-grouped-bar-chart [chartData]="data"></app-grouped-bar-chart>
+    <app-line-chart [chartData]="data"></app-line-chart>
+    <app-donut-chart [chartData]="data"></app-donut-chart>
+  </div>
 </div>

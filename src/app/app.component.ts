@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { BarChartComponent } from './udemy-charts/bar-chart/bar-chart.component';
@@ -16,6 +16,7 @@ import { MultipleLineChartComponent } from './udemy-charts/multiple-line-chart/m
 import { DonutChartComponent } from './charts/donut-chart/donut-chart.component';
 import { PieChartComponent } from './udemy-charts/pie-chart/pie-chart.component';
 import { Observable, map } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-root',
@@ -36,6 +37,7 @@ import { Observable, map } from 'rxjs';
   styleUrl: './app.component.scss',
 })
 export class AppComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
   stackedData!: GroupStackedData;
   multipleLineData!: any;
   data$: Observable<DepartmentEntry[]> | undefined;
@@ -52,6 +54,7 @@ export class AppComponent implements OnInit {
   getStackedBarData() {
     this.dataService
       .getParsedData('assets/population.csv')
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((data) => {
         const stacks = setStacks(data, 'year', 'gender', 'age_group', 'value');
         this.stackedData = {

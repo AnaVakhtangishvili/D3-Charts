@@ -1,5 +1,5 @@
-import { Component, ElementRef, Input, OnInit } from '@angular/core';
-import { DepartmentEntry } from '../models/chart.models';
+import { Component, DestroyRef, ElementRef, Input, OnInit, inject } from '@angular/core';
+import { DepartmentEntry, LegendConfig } from '../models/chart.models';
 import { ChartDimensionsService } from '../../services/chart-dimensions.service';
 import * as d3 from 'd3';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -7,6 +7,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Department } from '../models/chart.enums';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-line-chart',
@@ -22,6 +23,7 @@ import { Department } from '../models/chart.enums';
 })
 export class LineChartComponent implements OnInit {
   @Input() chartData: DepartmentEntry[] = [];
+  private destroyRef = inject(DestroyRef);
 
   departmentSelectionControl = new FormControl(Department.DEFENSE);
   filteredChartData: DepartmentEntry[] = [];
@@ -45,6 +47,15 @@ export class LineChartComponent implements OnInit {
 
   margin = { top: 40, right: 20, bottom: 50, left: 96 };
 
+  legendConfig: LegendConfig = {
+    rectSize: 15,
+    rectBorderRadius: 5,
+    fontSize: '0.75rem',
+    attrX: 30,
+    attrY: 5,
+    spacing: 20,
+  };
+
   constructor(
     private element: ElementRef,
     private dimensions: ChartDimensionsService
@@ -64,10 +75,12 @@ export class LineChartComponent implements OnInit {
   setData() {
     this.departments = [...new Set(this.chartData.map((d) => d.department))];
 
-    this.departmentSelectionControl.valueChanges.subscribe((value) => {
-      this.filterChartData(value);
-      this.updateChart();
-    });
+    this.departmentSelectionControl.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((value) => {
+        this.filterChartData(value);
+        this.updateChart();
+      });
   }
 
   filterChartData(department: string | null) {
@@ -90,7 +103,7 @@ export class LineChartComponent implements OnInit {
         'transform',
         `translate(${this.dimensions.marginLeft}, ${this.dimensions.marginBottom})`
       )
-      .style('font-size', '1rem');
+      .style('font-size', this.legendConfig.fontSize);
 
     this.yAxisContainer = this.svg
       .append('g')
@@ -98,7 +111,7 @@ export class LineChartComponent implements OnInit {
         'transform',
         `translate(${this.dimensions.marginLeft}, ${this.dimensions.marginTop})`
       )
-      .style('font-size', '1rem');
+      .style('font-size', this.legendConfig.fontSize);
 
     this.chartContainer = this.svg
       .append('g')
@@ -110,7 +123,7 @@ export class LineChartComponent implements OnInit {
 
     this.title = this.svg
       .append('g')
-      .style('font-size', '1.5rem')
+      .style('font-size', '1rem')
       .append('text')
       .attr(
         'transform',

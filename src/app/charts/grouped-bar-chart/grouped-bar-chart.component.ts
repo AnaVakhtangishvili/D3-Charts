@@ -1,5 +1,9 @@
 import { Component, ElementRef, Input, OnInit } from '@angular/core';
-import { DepartmentEntry, GroupedBarData } from '../models/chart.models';
+import {
+  DepartmentEntry,
+  GroupedBarData,
+  LegendConfig,
+} from '../models/chart.models';
 import { ChartDimensionsService } from '../../services/chart-dimensions.service';
 import * as d3 from 'd3';
 import { CommonModule } from '@angular/common';
@@ -32,6 +36,15 @@ export class GroupedBarChartComponent implements OnInit {
   scales: any = {};
 
   margin = { top: 40, right: 20, bottom: 200, left: 100 };
+
+  legendConfig: LegendConfig = {
+    rectSize: 15,
+    rectBorderRadius: 5,
+    fontSize: '0.75rem',
+    attrX: 30,
+    attrY: 5,
+    spacing: 20,
+  };
 
   constructor(
     private element: ElementRef,
@@ -69,7 +82,7 @@ export class GroupedBarChartComponent implements OnInit {
         'transform',
         `translate(${this.dimensions.marginLeft}, ${this.dimensions.marginBottom})`
       )
-      .style('font-size', '1rem');
+      .style('font-size', this.legendConfig.fontSize);
 
     this.yAxisContainer = this.svg
       .append('g')
@@ -77,7 +90,7 @@ export class GroupedBarChartComponent implements OnInit {
         'transform',
         `translate(${this.dimensions.marginLeft}, ${this.dimensions.marginTop})`
       )
-      .style('font-size', '1rem');
+      .style('font-size', this.legendConfig.fontSize);
 
     this.chartContainer = this.svg
       .append('g')
@@ -97,7 +110,7 @@ export class GroupedBarChartComponent implements OnInit {
 
     this.title = this.svg
       .append('g')
-      .style('font-size', '1.5rem')
+      .style('font-size', '1rem')
       .append('text')
       .attr(
         'transform',
@@ -196,21 +209,23 @@ export class GroupedBarChartComponent implements OnInit {
       .join('g')
       .attr(
         'transform',
-        (d: DepartmentEntry, i: number) => `translate(0, ${40 * i})`
-      );
+        (d: DepartmentEntry, i: number) => `translate(0, ${20 * i})`
+      )
+      .style('font-size', this.legendConfig.fontSize);
 
     legend
       .append('rect')
-      .attr('width', 20)
-      .attr('height', 20)
+      .attr('width', this.legendConfig.rectSize)
+      .attr('height', this.legendConfig.rectSize)
       .attr('fill', (d: DepartmentEntry, i: number) =>
         this.scales.color(d.department)
       );
 
     legend
       .append('text')
-      .attr('x', 30)
-      .attr('y', 15)
+      .attr('x', this.legendConfig.attrX)
+      .attr('y', this.legendConfig.attrY)
+      .attr('alignment-baseline', 'hanging')
       .text((d: DepartmentEntry) => d.department);
   }
 

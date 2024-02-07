@@ -82,3 +82,12 @@ export interface DonutData {
   startAngle: number;
   value: number;
 }
+
+export interface LegendConfig {
+  rectSize: number;
+  rectBorderRadius: number;
+  fontSize: string;
+  attrX: number
+  attrY: number;
+  spacing: number;
+}
